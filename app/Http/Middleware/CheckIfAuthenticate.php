@@ -21,7 +21,7 @@ class CheckIfAuthenticate
     {
 
         try {
-            $user = JWTAuth::parseToken();
+            $user = JWTAuth::parseToken()->authenticate();
         }
         catch (JWTException $e){
             return response()->json([
