@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Gallery;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Storage;
 
 class GalleryController extends Controller
 {
@@ -56,10 +57,14 @@ class GalleryController extends Controller
             ], 422);
         }
 
-        $path = $request->file('img')->store('media/images/uploads', 'public');
+        $path = $request->file('img')
+            ->store('', 'google');
+        $imgsource = Storage::disk('google')
+            ->url($path);
+
 
         $gallery = new Gallery();
-        $gallery->img_src = $path;
+        $gallery->img_src = $imgsource;
         $gallery->save();
 
         return response()->json([], 204);

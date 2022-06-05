@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use App\Models\Products;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
 
 class ProductsController extends Controller
@@ -58,12 +59,15 @@ class ProductsController extends Controller
             ], 422);
         }
 
-        $path = $request->file('img')->store('media/images/uploads', 'public');
+        $path = $request->file('img')
+            ->store('', 'google');
+        $imgsource = Storage::disk('google')
+            ->url($path);
 
         $products = new Products();
         $products->title = $request->title;
         $products->price = $request->price;
-        $products->img_src = $path;
+        $products->img_src = $imgsource;
         $products->save();
 
         return response()->json([], 204);
@@ -117,12 +121,15 @@ class ProductsController extends Controller
             ], 422);
         }
 
-        $path = $request->file('img')->store('media/images/uploads', 'public');
+        $path = $request->file('img')
+            ->store('', 'google');
+        $imgsource = Storage::disk('google')
+            ->url($path);
 
         $products = Products::find($request->id);
         $products->title = $request->title;
         $products->price = $request->price;
-        $products->img_src = $path;
+        $products->img_src = $imgsource;
         $products->save();
 
         return response()->json([], 204);
