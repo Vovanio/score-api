@@ -6,6 +6,7 @@ use App\Models\Products;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Str;
 
 class ProductsController extends Controller
 {
@@ -46,7 +47,7 @@ class ProductsController extends Controller
         $validator = Validator::make($request->all(), [
             'title' => 'required|string',
             'price' => 'required|integer',
-            'img' => 'nullable|image'
+            'img' => 'nullable|string'
         ]);
 
         if ($validator->fails()){
@@ -59,10 +60,21 @@ class ProductsController extends Controller
             ], 422);
         }
 
-        $path = $request->file('img')
-            ->store('', 'google');
-        $imgsource = Storage::disk('google')
-            ->url($path);
+        $image_64 = $request->img;
+
+        $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
+
+        $replace = substr($image_64, 0, strpos($image_64, ',')+1);
+
+        $image = str_replace($replace, '', $image_64);
+
+        $image = str_replace(' ', '+', $image);
+
+        $imageName = Str::random(10).'.'.$extension;
+
+        Storage::disk('google')->put($imageName, base64_decode($image));
+
+        $imgsource = Storage::disk('google')->url($imageName);
 
         $products = new Products();
         $products->title = $request->title;
@@ -108,7 +120,7 @@ class ProductsController extends Controller
             'id' => 'required|integer',
             'title' => 'required|string',
             'price' => 'required|integer',
-            'img' => 'nullable|image'
+            'img' => 'nullable|string'
         ]);
 
         if ($validator->fails()){
@@ -121,10 +133,21 @@ class ProductsController extends Controller
             ], 422);
         }
 
-        $path = $request->file('img')
-            ->store('', 'google');
-        $imgsource = Storage::disk('google')
-            ->url($path);
+        $image_64 = $request->img;
+
+        $extension = explode('/', explode(':', substr($image_64, 0, strpos($image_64, ';')))[1])[1];   // .jpg .png .pdf
+
+        $replace = substr($image_64, 0, strpos($image_64, ',')+1);
+
+        $image = str_replace($replace, '', $image_64);
+
+        $image = str_replace(' ', '+', $image);
+
+        $imageName = Str::random(10).'.'.$extension;
+
+        Storage::disk('google')->put($imageName, base64_decode($image));
+
+        $imgsource = Storage::disk('google')->url($imageName);
 
         $products = Products::find($request->id);
         $products->title = $request->title;
